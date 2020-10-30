@@ -9,8 +9,8 @@ $holes_bottom_part_top = 36;
 $line_width = 0.5;
 $holes_bottom_thickness = 1;
 
-standard_sleeve_x = 90;
-standard_sleeve_y = 66;
+standard_sleeve_x = 93;
+standard_sleeve_y = 67;
 
 card_finger_hole_width = 22;
 card_finger_hole_length = 15;
@@ -43,7 +43,7 @@ big_part();
 small_part([-150, 0]);
 
 
-module big_part(position=[0,0], $holes_finger_hole_radius=10, $holes_finger_hole_extend=10) {
+module big_part(position=[0,0], $holes_finger_hole_radius=12, $holes_finger_hole_extend=10) {
     big_size_x = wholeBoxSizeX - card_part_x;
     translate([position[0], position[1], 0]) {
         difference() {
@@ -70,11 +70,6 @@ module big_part(position=[0,0], $holes_finger_hole_radius=10, $holes_finger_hole
             for(hole = clearing_holes) {
                 cubic_hole_with_finger_holes(position=[wall, hole[1]], size=[clearing_size_x, hole[0]]);
             };
-            
-            echo(clearing_holes=clearing_holes);
-            echo(cummulative_vector_size(clearing_sizes_y, distance=wall));
-            echo($holes_finger_hole_extend=$holes_finger_hole_extend);
-            echo(clearing_holes_size_y=clearing_holes_size_y);
             
             // big unorganized area
             ytop=clearing_holes_size_y+2*wall;
@@ -128,11 +123,13 @@ module item_organizer(position){
     $holes_bottom_part_top=item_organizer_height;
     $holes_bottom_thickness=small_wall;
     mini_hole=14;
-    mini_cover_height = 15;
 
+    item_box_x = small_wall*3+item_size*2;
+    item_box_y = small_wall*3+item_size*2;
+    
     translate([50+position[0], position[1], 0]) {
         difference() {
-            cube([small_wall*3+item_size*2, small_wall*3+item_size*2, $holes_bottom_part_top]);
+            cube([item_box_x, item_box_y, $holes_bottom_part_top]);
             
             cubic_hole(position=[small_wall, small_wall], size=[item_size, item_size]);
             cubic_hole(position=[2*small_wall+item_size, small_wall], size=[item_size, item_size]);
@@ -151,12 +148,28 @@ module item_organizer(position){
         }
     }
     
+    // item cover
     translate([position[0], position[1], 0]) {
-        difference() {
-            cube([cover_size, cover_size, mini_cover_height]);
-            translate([small_wall+cover_space, small_wall+cover_space, small_wall]) 
-               cube([cover_size_outer, cover_size_outer, $holes_bottom_part_top]);
+        cube([item_box_x, item_box_y, wall]);
+        
+        holder_size = item_size - 2*cover_space;
+
+        positions = [[small_wall+cover_space, small_wall+cover_space],
+                     [small_wall+cover_space, item_box_x-(small_wall+cover_space+holder_size)],
+                     [item_box_x-(small_wall+cover_space+holder_size), small_wall+cover_space],
+                     [item_box_x-(small_wall+cover_space+holder_size), item_box_x-(small_wall+cover_space+holder_size)]
+                    ];
+
+        for(pos = positions) translate([pos[0], pos[1], 0]) {
+            difference() {
+                cube([holder_size,holder_size,thick_wall] );
+                
+                holder_hole = holder_size-2*wall;
+                translate([wall+cover_space, wall+cover_space, small_wall])
+                    cube([holder_hole, holder_hole, thick_wall]);
+            }
         }
-    }
+        
+    }    
 }
 
