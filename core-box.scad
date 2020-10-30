@@ -27,9 +27,9 @@ thick_wall = 6;
 cover_space = 0.4;
 item_size = 20; // item size with reserve
 item_organizer_height = $holes_bottom_part_top-2*wall;
-cover_size = 5*small_wall+2*item_size+2*cover_space;
-cover_size_outer = cover_size-2*cover_space-2*small_wall;
 
+item_box_x = small_wall*3+item_size*2;
+item_box_y = item_box_x;
 
 map_holder_top = $holes_bottom_part_top + 17;
 
@@ -102,13 +102,13 @@ module small_part(position=[0,0]) {
             cubic_hole(position=[finger_hole_center_x, wall+standard_sleeve_y], size=[card_finger_hole_width, card_finger_hole_length+1], center=true); 
             
             // item organizer
-            cover_size_hole=cover_size_outer+2*cover_space;
-            cover_mid = cards2top+cover_size_hole/2+card_finger_hole_length-0.01;
+            item_hole_size=item_box_x+2*cover_space;
+            cover_mid = cards2top+item_hole_size/2+card_finger_hole_length-0.01;
             
-            cubic_hole(position=[finger_hole_center_x,cover_mid], size=[cover_size_hole,cover_size_hole], center=true);
-            cubic_hole(position=[finger_hole_center_x,cover_mid], size=[cover_size_hole-card_finger_hole_length,cover_size_hole-card_finger_hole_length], center=true, depth=50);
+            cubic_hole(position=[finger_hole_center_x,cover_mid], size=[item_hole_size,item_hole_size], center=true);
+            cubic_hole(position=[finger_hole_center_x,cover_mid], size=[item_hole_size-card_finger_hole_length,item_hole_size-card_finger_hole_length], center=true, depth=50);
             
-            cubic_hole(position=[finger_hole_center_x, cards2top+card_finger_hole_length+cover_size_hole-1], size=[card_finger_hole_width, card_finger_hole_length+1], centerX=true, $holes_bottom_part_top=map_holder_top);
+            cubic_hole(position=[finger_hole_center_x, cards2top+card_finger_hole_length+item_hole_size-1], size=[card_finger_hole_width, card_finger_hole_length+1], centerX=true, $holes_bottom_part_top=map_holder_top);
             
             // dice
             over_cards_center=wholeBoxSizeY-thick_wall-(wholeBoxSizeY-thick_wall - cards2top)/2;
@@ -124,8 +124,7 @@ module item_organizer(position){
     $holes_bottom_thickness=small_wall;
     mini_hole=14;
 
-    item_box_x = small_wall*3+item_size*2;
-    item_box_y = small_wall*3+item_size*2;
+
     
     translate([50+position[0], position[1], 0]) {
         difference() {
@@ -165,7 +164,7 @@ module item_organizer(position){
                 cube([holder_size,holder_size,thick_wall] );
                 
                 holder_hole = holder_size-2*wall;
-                translate([wall+cover_space, wall+cover_space, small_wall])
+                translate([wall, wall, small_wall])
                     cube([holder_hole, holder_hole, thick_wall]);
             }
         }
