@@ -24,7 +24,8 @@ wall = 1.3;
 thick_wall = 6;
 
 // item cover data
-cover_space = 0.4;
+cover_space = 0.3;
+item_org_space = 0.4;
 item_size = 20; // item size with reserve
 item_organizer_height = $holes_bottom_part_top-2*wall;
 
@@ -43,7 +44,7 @@ big_part();
 small_part([-150, 0]);
 
 
-module big_part(position=[0,0], $holes_finger_hole_radius=12, $holes_finger_hole_extend=10) {
+module big_part(position=[0,0], $holes_finger_hole_radius=12, $holes_finger_hole_extend=10, $holes_finger_additional_depth=7) {
     big_size_x = wholeBoxSizeX - card_part_x;
     translate([position[0], position[1], 0]) {
         difference() {
@@ -58,13 +59,13 @@ module big_part(position=[0,0], $holes_finger_hole_radius=12, $holes_finger_hole
             clearing_size_x = 52;
             clearing_depth = 34;
             
-            clearing_sizes_y = [9, 9, 9, 9, 10, 10, 10, 10, 12, 12, 12, 12];
+            clearing_sizes_y = [9.5, 9.5, 9.5, 9.5, 10.5, 10.5, 10.5, 10.5, 13, 13, 13, 13];
             
             assert(clearing_depth < $holes_bottom_part_top+1.5);
            
-            clearing_holes = cummulative_vector(clearing_sizes_y, start=wall+$holes_finger_hole_extend, distance=wall);
+            clearing_holes = cummulative_vector(clearing_sizes_y, start=wall+$holes_finger_hole_extend, distance=2);
 
-            clearing_holes_size_y = 2*$holes_finger_hole_extend+cummulative_vector_size(clearing_sizes_y, distance=wall);
+            clearing_holes_size_y = 2*$holes_finger_hole_extend+cummulative_vector_size(clearing_sizes_y, distance=2);
                             
             // [clearing size y, position y] 
             for(hole = clearing_holes) {
@@ -102,7 +103,8 @@ module small_part(position=[0,0]) {
             cubic_hole(position=[finger_hole_center_x, wall+standard_sleeve_y], size=[card_finger_hole_width, card_finger_hole_length+1], center=true); 
             
             // item organizer
-            item_hole_size=item_box_x+2*cover_space;
+            item_hole_size=item_box_x+2*item_org_space;
+            echo(item_hole_size=item_hole_size);
             cover_mid = cards2top+item_hole_size/2+card_finger_hole_length-0.01;
             
             cubic_hole(position=[finger_hole_center_x,cover_mid], size=[item_hole_size,item_hole_size], center=true);
@@ -123,13 +125,10 @@ module item_organizer(position){
     $holes_bottom_part_top=item_organizer_height;
     $holes_bottom_thickness=small_wall;
     mini_hole=14;
-
-
     
     translate([50+position[0], position[1], 0]) {
         difference() {
             cube([item_box_x, item_box_y, $holes_bottom_part_top]);
-            
             cubic_hole(position=[small_wall, small_wall], size=[item_size, item_size]);
             cubic_hole(position=[2*small_wall+item_size, small_wall], size=[item_size, item_size]);
             cubic_hole(position=[small_wall, 2*small_wall+item_size], size=[item_size, item_size]);
@@ -152,7 +151,7 @@ module item_organizer(position){
         cube([item_box_x, item_box_y, wall]);
         
         holder_size = item_size - 2*cover_space;
-
+        echo(item_box_x=item_box_x, holder_size=holder_size);
         positions = [[small_wall+cover_space, small_wall+cover_space],
                      [small_wall+cover_space, item_box_x-(small_wall+cover_space+holder_size)],
                      [item_box_x-(small_wall+cover_space+holder_size), small_wall+cover_space],
